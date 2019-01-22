@@ -19,7 +19,7 @@ end
 def apply_coupons(cart, coupons)
   new_cart = {}
   cart_int, coup_int, discount, non_dis = 0, 0, 0, 0
-
+    cart.each do |cart_key, cart_val|
       coupons.each do |coup_i|
           key = coup_i[:item]
           if cart.has_key?(key)
@@ -38,7 +38,6 @@ def apply_coupons(cart, coupons)
           end
       end
   new_cart
-  binding.pry
 end
 
 def apply_clearance(cart)
