@@ -22,7 +22,7 @@ def apply_coupons(cart, coupons)
     cart.each do |cart_key, cart_val|
       coupons.each do |coup_i|
           key = coup_i[:item]
-          if cart.has_key?(key)
+          if cart_key == key
             cart_int = cart[key][:count]
             coup_int = coup_i[:num]
             non_dis = cart_int % coup_int
