@@ -17,38 +17,42 @@ def consolidate_cart(cart)
 end
 
 def apply_coupons(cart, coupons)
-  new_cart = {}
-  cart_int, coup_int, discount, non_dis = 0, 0, 0, 0
-  new_price = 0.0
-    cart.each do |cart_key, cart_val|
-      new_cart[cart_key] = cart_val
-      cart_int = cart_val[:count]
-        coupons.each do |coup_i|
-          if cart_key == coup_i[:item]
-            binding.pry
-            coup_int += coup_i[:num]
-            discount += 1
-            new_price = coup_i[:cost]
-          end
-        end
-      binding.pry
-      non_dis = cart_int % coup_int
-      new_cart[cart_key] = {price: cart_val[:price],
-                                clearance: cart[cart_key][:clearance],
-                                count: non_dis}
-
-      new_cart["#{cart_key} W/COUPON"] = {price: new_price,
-                                clearance: cart[cart_key][:clearance],
-                                count: discount}
-
+  coupons.each do |coupon|
+    item_name = coupon[:item]
+    if cart[item_name] && cart[item_name][:count] >= coupon[:num]
+      if cart["#{item_name} W/COUPON"]
+        cart["#{item_name} W/COUPON"][:count] += 1
+      else
+        cart["#{item_name} W/COUPON"] = {price: coupon[:cost], count: 1, clearance: cart[item_name][:clearance]}
+      end
+      cart[item_name][:count] -= coupon[:num]
     end
-  new_cart
+  end
+  cart
 end
 
 def apply_clearance(cart)
   # code here
+  cart.each do |cart_item, item_value|
+    if item_value[:clearance] == true
+      item_value[:price] = (item_value[:price]*0.8).round(2)
+    end
+  end
+  cart
+
 end
 
 def checkout(cart, coupons)
-  # code here
+  consolidated_cart = consolidate_cart(cart)
+  coupons_applied = apply_coupons(consolidated_cart, coupons)
+  final_cart = apply_clearance(coupons_applied)
+  total_cost = 0.0
+  final_cart.each_value do |cart_value|
+    total_cost += (cart_value[:price] * cart_value[:count])
+  end
+  if total_cost > 100
+    total_cost = total_cost - (total_cost*0.1)
+  else
+    total_cost
+  end
 end
