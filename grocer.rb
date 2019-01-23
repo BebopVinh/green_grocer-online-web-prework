@@ -17,27 +17,30 @@ def consolidate_cart(cart)
 end
 
 def apply_coupons(cart, coupons)
-
   new_cart = {}
   cart_int, coup_int, discount, non_dis = 0, 0, 0, 0
+  new_price = 0.0
     cart.each do |cart_key, cart_val|
-      new_cart[cart_key] = {}
-      coupons.each do |coup_i|
-          key = coup_i[:item]
-          if cart_key == key
-            cart_int = cart_val[:count]
-            coup_int = coup_i[:num]
-            non_dis = cart_int % coup_int
-            discount = cart_int / coup_int
-
-            new_cart[key][:count] = non_dis
-            new_cart["#{key} W/COUPON"] = {price: coup_i[:cost],
-                                      clearance: cart[key][:clearance],
-                                      count: discount}
-          else
-            new_cart[cart_key] = cart_val
+      new_cart[cart_key] = cart_val
+      cart_int = cart_val[:count]
+        coupons.each do |coup_i|
+          if cart_key == coup_i[:item]
+            binding.pry
+            coup_int += coup_i[:num]
+            discount += 1
+            new_price = coup_i[:cost]
           end
-      end
+        end
+      binding.pry
+      non_dis = cart_int % coup_int
+      new_cart[cart_key] = {price: cart_val[:price],
+                                clearance: cart[cart_key][:clearance],
+                                count: non_dis}
+
+      new_cart["#{cart_key} W/COUPON"] = {price: new_price,
+                                clearance: cart[cart_key][:clearance],
+                                count: discount}
+
     end
   new_cart
 end
